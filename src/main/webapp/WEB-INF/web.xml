@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!DOCTYPE web-app 
+          PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN" 
+          "http://java.sun.com/dtd/web-app_2_3.dtd">
+
+<web-app>
+
+  <display-name>bayesbot</display-name>
+  <description>naive bayesian classifier as a web service</description>
+
+  <servlet>
+    <servlet-name>NaiveBayes</servlet-name>
+    <description>the main app servlet</description>
+    <servlet-class>bayesbot.Servlet</servlet-class>
+  </servlet>
+
+  <servlet-mapping>
+    <servlet-name>NaiveBayes</servlet-name>
+    <url-pattern>/*</url-pattern>
+  </servlet-mapping>
+
+</web-app>
