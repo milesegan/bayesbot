@@ -1,5 +1,6 @@
 package bayesbot
 
+import java.lang.ThreadLocal
 import javax.servlet._
 import javax.servlet.http._
 import actors.Actor
@@ -11,23 +12,30 @@ case class RegisterActor(a: Actor)
 object BayesClassifier extends Actor {
 
   var actors = List.empty[Actor]
+  var nextN = "1"
 
   def act() {
     while (true) {
       receive {
-        case RegisterActor(actor) => actors = actors :+ actor
-        case GetMsg => actors.foreach(a => a ! SetMsg(util.Random.nextInt(3000).toString))
+        case RegisterActor(actor) => {
+          actors = actors :+ actor
+          actor ! SetMsg(nextN)
+        }
+        case GetMsg => {
+          nextN = util.Random.nextInt(3000).toString
+          actors.foreach(a => a ! SetMsg(nextN))
+        }
       }
     }
   }
   
 }
 
-class ServletActor(boss: Actor) extends Actor {
+class ServletActor extends Actor {
   var message = "boo"
 
   def act() {
-    boss ! RegisterActor(this)
+    BayesClassifier ! RegisterActor(this)
 
     while (true) {
       receive {
@@ -41,8 +49,9 @@ class ServletActor(boss: Actor) extends Actor {
 class Servlet extends HttpServlet {
 
   BayesClassifier.start
-  val actor = new ServletActor(BayesClassifier)
-  actor.start
+  val actor = new ThreadLocal[Actor] {
+    override def initialValue = synchronized { new ServletActor().start }
+  }
 
   override
   def doGet(request: HttpServletRequest, response: HttpServletResponse) = {
@@ -52,8 +61,7 @@ class Servlet extends HttpServlet {
       BayesClassifier ! GetMsg
     }
     out.println(<h1>hello</h1>)
-    //out.println("hello")
-    out.println(actor !? (1000, GetMsg))
+    out.println(actor.get() !? (1000, GetMsg))
   }
 
 }
