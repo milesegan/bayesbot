@@ -1,0 +1,18 @@
+#!/usr/bin/env ruby
+# test a running bayes bot with a given dataset
+$: << File.dirname(__FILE__)
+
+require 'datafile'
+require 'net/http'
+
+file = DataFile.new(ARGV.first)
+
+Net::HTTP.start("localhost", "8080") do |http|
+  file.points.each do |c,f|
+    query = "/?c=#{c}&" + f.collect { |i| "f=#{i}" }.join("&")
+    resp = http.get(query)
+    puts c
+    puts resp.body
+    puts
+  end
+end

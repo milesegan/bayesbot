@@ -5,7 +5,7 @@ import javax.servlet._
 import javax.servlet.http._
 import actors.Actor
 
-class Servlet extends HttpServlet {
+class BayesServlet extends HttpServlet {
 
   BayesActor.start
 
@@ -30,9 +30,12 @@ class Servlet extends HttpServlet {
       classes match {
         case Some(cs:Seq[(String,Double)]) => {
           for ((c,prob) <- cs) {
-            Logger.info(c + " " + prob)
             out.println(c + " " + prob)
           }
+        }
+        case _ => {
+          response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR)
+          out.println("no response from classifier")
         }
       }
     }

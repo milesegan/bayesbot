@@ -21,7 +21,7 @@ class WorkerActor extends Actor {
           BayesActor ! AddSample(features, klass)
         }
         case UpdateClassifier(newc) => {
-          this.classifier = newc
+          classifier = newc
         }
         case Classify(features) => {
           sender ! classifier.classify(features)

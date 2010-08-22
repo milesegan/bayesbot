@@ -10,18 +10,25 @@
   <description>naive bayesian classifier as a web service</description>
 
   <servlet>
-    <servlet-name>NaiveBayes</servlet-name>
+    <servlet-name>BayesServlet</servlet-name>
     <description>the main app servlet</description>
-    <servlet-class>bayesbot.Servlet</servlet-class>
+    <servlet-class>bayesbot.BayesServlet</servlet-class>
+  </servlet>
+
+  <servlet>
+    <servlet-name>BulkLoad</servlet-name>
+    <description>bulk loader servlet</description>
+    <servlet-class>bayesbot.BulkLoadServlet</servlet-class>
   </servlet>
 
   <servlet-mapping>
-    <servlet-name>NaiveBayes</servlet-name>
-    <url-pattern>/*</url-pattern>
+    <servlet-name>BulkLoad</servlet-name>
+    <url-pattern>/bulk-load/</url-pattern>
   </servlet-mapping>
 
-  <session-config>
-    <session-timeout>30</session-timeout>
-  </session-config>
+  <servlet-mapping>
+    <servlet-name>BayesServlet</servlet-name>
+    <url-pattern>/*</url-pattern>
+  </servlet-mapping>
 
 </web-app>

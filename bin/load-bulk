@@ -1,0 +1,19 @@
+#!/usr/bin/env ruby
+# bulk-loads a dataset from a text file
+# via the bayesbot bulk-load api
+$: << File.dirname(__FILE__)
+
+require 'net/http'
+require 'datafile'
+
+file = DataFile.new(ARGV.first)
+data = file.points.collect { |c,f| c + "\t" + f.join("\t") }
+
+Net::HTTP.start("localhost", "8080") do |http|
+  while not data.empty?
+    chunk = data.take(100)
+    data = data.drop(100)
+    puts data.size
+    http.post("/bulk-load/", "data=" + chunk.join("\n"))
+  end
+end

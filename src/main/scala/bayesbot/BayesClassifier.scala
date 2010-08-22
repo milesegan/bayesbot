@@ -4,28 +4,28 @@ package bayesbot
  * Naive Bayesian classifier.
  */
 class BayesClassifier private(
-  val classes: Map[String,Long],
-  val features: Map[String,Long],
-  val featureClasses: Map[String,Map[String,Long]],
-  val count: Long) {
+  val classes: Map[String,Double],
+  val features: Map[String,Double],
+  val featureClasses: Map[(String,String),Double],
+  val count: Double) {
+
+  /**
+   * Increments values in map for every key in keys.
+   */
+  private def incKeys[A](map: Map[A,Double], keys: Seq[A]) = {
+    (map /: keys) { (m,k) => m.updated(k, m.getOrElse(k, 0d) + 1d) }
+  }
 
   /**
    * Adds a sample to the map, returning a new map
    * incorporating it.
    */
   def addSample(feat: Seq[String], klass: String): BayesClassifier = {
-    val newFs = for (f <- feat) yield (f, features.getOrElse(f, 0L) + 1L)
-    val newCs = (klass, classes.getOrElse(klass, 0L) + 1L)
-    val newFCs = for (f <- feat) yield {
-      val newFC = featureClasses.getOrElse(f, Map.empty[String,Long])
-      val newFCval = (klass, newFC.getOrElse(klass, 0L) + 1L)
-      (f, newFC + newFCval)
-    }
-    new BayesClassifier(
-      classes + newCs,
-      features ++ newFs,
-      featureClasses ++ newFCs,
-      count + 1)
+    val newFs = incKeys(features, feat)
+    val newCs = incKeys(classes, Seq(klass))
+    val newFCPairs = for (f <- feat) yield (f, klass)
+    val newFCs = incKeys(featureClasses, newFCPairs)
+    new BayesClassifier(newCs, newFs, newFCs, count + 1d)
   }
 
   /**
@@ -35,24 +35,22 @@ class BayesClassifier private(
    * in order of decreasing likelihood.
    */
   def classify(feat: Seq[String]): Seq[(String,Double)] = {
-    val probs = for (c <- classes.keySet) yield (c, probability(feat, c))
-    probs.toSeq.sorted
+    val ranked = for (c <- classes.keySet) yield {
+      val probs = for (f <- feat) yield probability(f, c)
+      (c, probs.product)
+    }
+    ranked.toSeq.sortBy(_._2).reverse
   }
 
   /**
    * Computes the probability of class klass given
-   * the features.
+   * the feature.
    */
-  def probability(feat: Seq[String], klass: String): Double = {
-    val probs = for (f <- feat;
-                     pC <- classes.get(klass);
-                     pF <- features.get(f); 
-                     pCFF <- featureClasses.get(f);
-                     pCFC <- pCFF.get(klass)) yield {
-                       pCFC * pC / pF * math.pow(count, 2) 
-                     }
-    if (probs.nonEmpty) probs.product
-    else 0.1 / count // TODO: optimize this
+  def probability(f: String, klass: String): Double = {
+    val p = for {pC <- classes.get(klass)
+                 pF <- features.get(f)
+                 pCF <- featureClasses.get(f, klass)} yield pCF * pC / (pF * count)
+    p getOrElse 0.1 / count // TODO: optimize this
   }
 }
 
