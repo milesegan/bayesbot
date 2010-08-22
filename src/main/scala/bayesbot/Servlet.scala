@@ -5,63 +5,52 @@ import javax.servlet._
 import javax.servlet.http._
 import actors.Actor
 
-case object GetMsg
-case class SetMsg(msg: String)
-case class RegisterActor(a: Actor)
-
-object BayesClassifier extends Actor {
-
-  var actors = List.empty[Actor]
-  var nextN = "1"
-
-  def act() {
-    while (true) {
-      receive {
-        case RegisterActor(actor) => {
-          actors = actors :+ actor
-          actor ! SetMsg(nextN)
-        }
-        case GetMsg => {
-          nextN = util.Random.nextInt(3000).toString
-          actors.foreach(a => a ! SetMsg(nextN))
-        }
-      }
-    }
-  }
-  
-}
-
-class ServletActor extends Actor {
-  var message = "boo"
-
-  def act() {
-    BayesClassifier ! RegisterActor(this)
-
-    while (true) {
-      receive {
-        case SetMsg(msg) => message = msg
-        case GetMsg => sender ! message
-      }
-    }
-  }
-}
-
 class Servlet extends HttpServlet {
 
-  BayesClassifier.start
+  BayesActor.start
+
   val actor = new ThreadLocal[Actor] {
-    override def initialValue = synchronized { new ServletActor().start }
+    override def initialValue = synchronized { 
+      val w = new WorkerActor()
+      w.start
+      w
+    }
   }
 
   override
   def doGet(request: HttpServletRequest, response: HttpServletResponse) = {
     val out = response.getWriter
-    if (request.getRequestURI.startsWith("/reset")) {
-      out.println("reset")
-      BayesClassifier ! GetMsg
+    val features = request.getParameterValues("f")
+    if (features == null || features.isEmpty) {
+      response.setStatus(HttpServletResponse.SC_BAD_REQUEST)
+      out.println("no features specified")
     }
-    out.println(<h1>hello</h1>)
-    out.println(actor.get() !? (1000, GetMsg))
+    else {
+      val classes = (actor.get() !? (1000, msgs.Classify(features.toSeq)))
+      classes match {
+        case Some(cs:Seq[(String,Double)]) => {
+          for ((c,prob) <- cs) {
+            Logger.info(c + " " + prob)
+            out.println(c + " " + prob)
+          }
+        }
+      }
+    }
+  }
+
+  override
+  def doPost(request: HttpServletRequest, response: HttpServletResponse) = {
+    val out = response.getWriter
+    val klass = request.getParameter("c")
+    val features = request.getParameterValues("f")
+
+    if (klass == null || features == null || features.isEmpty) {
+      response.setStatus(HttpServletResponse.SC_BAD_REQUEST)
+      out.println("missing class or features")
+    }
+    else {
+      actor.get() ! msgs.AddSample(features.toSeq, klass)
+    }
   }
 
 }
