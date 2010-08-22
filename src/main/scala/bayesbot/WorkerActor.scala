@@ -9,11 +9,9 @@ import msgs._
  */
 class WorkerActor extends Actor {
 
-  var classifier = BayesClassifier()
+  var classifier: BayesClassifier = (BayesActor !? RegisterActor(this)).asInstanceOf[BayesClassifier]
 
   def act() {
-
-    BayesActor ! RegisterActor(this)
 
     while (true) {
       receive {
@@ -23,8 +21,8 @@ class WorkerActor extends Actor {
         case UpdateClassifier(newc) => {
           classifier = newc
         }
-        case Classify(features) => {
-          sender ! classifier.classify(features)
+        case ClassifyRequest(features) => {
+          sender ! ClassifyResult(classifier.classify(features))
         }
       }
     }

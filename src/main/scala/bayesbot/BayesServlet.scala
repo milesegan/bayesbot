@@ -5,6 +5,9 @@ import javax.servlet._
 import javax.servlet.http._
 import actors.Actor
 
+/**
+ * Main servlet. Handles both add and classify requests.
+ */
 class BayesServlet extends HttpServlet {
 
   BayesActor.start
@@ -18,7 +21,7 @@ class BayesServlet extends HttpServlet {
   }
 
   override
-  def doGet(request: HttpServletRequest, response: HttpServletResponse) = {
+  def doGet(request: HttpServletRequest, response: HttpServletResponse) {
     val out = response.getWriter
     val features = request.getParameterValues("f")
     if (features == null || features.isEmpty) {
@@ -26,14 +29,14 @@ class BayesServlet extends HttpServlet {
       out.println("no features specified")
     }
     else {
-      val classes = (actor.get() !? (1000, msgs.Classify(features.toSeq)))
-      classes match {
-        case Some(cs:Seq[(String,Double)]) => {
-          for ((c,prob) <- cs) {
+      actor.get() ! msgs.ClassifyRequest(features.toSeq)
+      Actor.self.receiveWithin(1000) {
+        case msgs.ClassifyResult(results) => {
+          for ((c,prob) <- results) {
             out.println(c + " " + prob)
           }
         }
-        case _ => {
+        case None => {
           response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR)
           out.println("no response from classifier")
         }
@@ -42,7 +45,7 @@ class BayesServlet extends HttpServlet {
   }
 
   override
-  def doPost(request: HttpServletRequest, response: HttpServletResponse) = {
+  def doPost(request: HttpServletRequest, response: HttpServletResponse) {
     val out = response.getWriter
     val klass = request.getParameter("c")
     val features = request.getParameterValues("f")
