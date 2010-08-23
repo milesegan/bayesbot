@@ -13,8 +13,8 @@ object BayesActor extends Actor {
   var actors = Set.empty[Actor]
 
   def act() {
-    while (true) {
-      receive {
+    loop {
+      react {
         case RegisterActor(actor) => {
           actors = actors + actor
           reply(classifier) // use reply because this message will be synchronous
@@ -28,4 +28,5 @@ object BayesActor extends Actor {
   }
   
 }
+
 

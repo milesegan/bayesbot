@@ -12,9 +12,8 @@ class WorkerActor extends Actor {
   var classifier: BayesClassifier = (BayesActor !? RegisterActor(this)).asInstanceOf[BayesClassifier]
 
   def act() {
-
-    while (true) {
-      receive {
+    loop {
+      react {
         case AddSample(features, klass) => {
           BayesActor ! AddSample(features, klass)
         }
