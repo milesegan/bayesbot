@@ -1,0 +1,14 @@
+#!/usr/bin/env ruby
+
+lines = ARGF.readlines
+
+srand(Time.now.to_i)
+
+((lines.size - 1).downto 0).each do |i|
+  newp = rand(i)
+  tmp = lines[newp]
+  lines[newp] = lines[i]
+  lines[i] = tmp
+end
+
+puts lines

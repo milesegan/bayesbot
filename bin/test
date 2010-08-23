@@ -8,11 +8,12 @@ require 'net/http'
 file = DataFile.new(ARGV.first)
 
 Net::HTTP.start("localhost", "8080") do |http|
+  correct = 0
   file.points.each do |c,f|
     query = "/?c=#{c}&" + f.collect { |i| "f=#{i}" }.join("&")
-    resp = http.get(query)
-    puts c
-    puts resp.body
-    puts
+    resp = http.get(query).body.strip
+    correct +=1 if resp == c
+    puts "#{c} => #{resp}"
   end
+  puts correct.to_f / file.points.size
 end
