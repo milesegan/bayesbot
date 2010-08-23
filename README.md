@@ -36,3 +36,27 @@ with a data parameter containing the contents of a file formatted like this:
     class2 feature1  feature2  feature3
 
 Where all fields are tab separated.
+
+## building and running bayes bot
+
+To build bayesbot, first [install sbt](http://code.google.com/p/simple-build-tool/wiki/Setup).
+
+At the root of the bayesbot directory, run the following commands:
+
+    sbt update
+    sbt compile
+
+You can now either directly start bayesbot via sbt and jetty like this:
+
+    sbt jetty-run
+
+to run bayesbot on port 8080. You can then shut it down like this:
+
+   sbt jetty-stop
+
+Or, you can run this command to bundle bayesbot as a war file to deploy
+into any java web server:
+
+    sbt package
+
+This will create a bayesbot war file in the target directory.
