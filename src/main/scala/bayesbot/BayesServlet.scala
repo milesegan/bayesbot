@@ -32,9 +32,7 @@ class BayesServlet extends HttpServlet {
       actor.get() ! msgs.ClassifyRequest(features.toSeq)
       Actor.self.receiveWithin(1000) {
         case msgs.ClassifyResult(results) => {
-          for ((c,prob) <- results) {
-            out.println(c + " " + prob)
-          }
+          out.println(results.head._1)
         }
         case None => {
           response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR)
