@@ -1,9 +1,11 @@
 package bayesbot
 
+import org.slf4j.LoggerFactory
+
 object Logger {
 
-  private def logger = org.apache.log4j.Logger.getRootLogger
+  lazy val logger = LoggerFactory.getLogger(Logger.getClass)
 
-  def info(msg: String) = System.err.println(msg) // TODO: fix this
+  def info(msg: String) = logger.info(msg)
   
 }
