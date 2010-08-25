@@ -9,7 +9,9 @@ import msgs._
  */
 class WorkerActor extends Actor {
 
-  var classifier: BayesClassifier = (BayesActor !? RegisterActor(this)).asInstanceOf[BayesClassifier]
+  // register with BayesActor and get initial copy of our classifier
+  var classifier: BayesClassifier = 
+    (BayesActor !? RegisterWorker(this)).asInstanceOf[BayesClassifier]
 
   def act() {
     loop {

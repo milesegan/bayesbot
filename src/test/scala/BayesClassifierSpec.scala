@@ -6,10 +6,10 @@ class BayesClassifierSpec extends FlatSpec with ShouldMatchers {
   
   var bc = BayesClassifier()
   val samples = List(
-    ("gnome", List("short", "stout", "jolly")),
-    ("elf", List("tall", "slender", "solemn")),
-    ("orc", List("tall", "stout", "fierce")),
-    ("pixie", List("short", "slender", "playful")))
+    "gnome" -> List("short", "stout", "jolly"),
+    "elf" -> List("tall", "slender", "solemn"),
+    "orc" -> List("tall", "stout", "fierce"),
+    "pixie" -> List("short", "slender", "playful"))
 
   for ((klass, features) <- samples) {
     bc = bc.addSample(features, klass)
@@ -22,7 +22,7 @@ class BayesClassifierSpec extends FlatSpec with ShouldMatchers {
   it should "calculate probability correctly" in {
     bc.probability("short", "gnome") should be === 0.125
     bc.probability("short", "orc") should be === 0.025
-    bc.probability("playful", "pixie") should be === 0.25
+    bc.probability("short", "pixie") should be === 0.125
   }
 
   it should "classify samples" in {

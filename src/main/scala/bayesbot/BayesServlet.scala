@@ -10,15 +10,15 @@ import actors.Actor
  */
 class BayesServlet extends HttpServlet {
 
-  BayesActor.start
-
-  val actor = new ThreadLocal[Actor] {
+  lazy val actor = new ThreadLocal[Actor] {
     override def initialValue = synchronized { 
       val w = new WorkerActor()
       w.start
       w
     }
   }
+
+  override def init() = BayesActor.start
 
   override
   def doGet(request: HttpServletRequest, response: HttpServletResponse) {
