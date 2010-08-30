@@ -26,8 +26,11 @@ class BayesClassifierSpec extends FlatSpec with ShouldMatchers {
   }
 
   it should "classify samples" in {
-    val classified = bc.classify(List("short", "stout", "jolly"))
+    var classified = bc.classify(List("short", "stout", "jolly"))
     classified.map(_._1) should be === Seq("gnome", "pixie", "orc", "elf")
+
+    classified = bc.classify(List("tall", "stout", "fierce"))
+    classified.map(_._1) should be === Seq("orc", "elf", "gnome", "pixie")
   }
   
 }
