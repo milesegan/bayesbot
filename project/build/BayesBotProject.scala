@@ -2,6 +2,8 @@ import sbt._
 
 class BayesBotProject(info: ProjectInfo) extends DefaultWebProject(info)
 {
+  override def pomPath = "pom.xml" // put pom in root
+
   // repositories
   val sonatypeJettyRepo = "sonatype repo" at "http://oss.sonatype.org/content/groups/jetty/"
   val mavenRepo = "maven repo" at "http://repo2.maven.org/maven2"
