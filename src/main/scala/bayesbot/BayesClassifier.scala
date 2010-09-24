@@ -37,7 +37,7 @@ class BayesClassifier private(
   def classify(feat: Seq[String]): Seq[(String,Double)] = {
     val ranked = for (c <- classes.keySet) yield {
       val probs = for (f <- feat) yield probability(f, c)
-      (c, probs.product)
+      (c, probs.product * classes.getOrElse(c, 0.0) / count)
     }
     ranked.toSeq.sortBy(_._2).reverse
   }
@@ -47,10 +47,8 @@ class BayesClassifier private(
    * the feature.
    */
   def probability(f: String, klass: String): Double = {
-    val p = for {pC <- classes.get(klass)
-                 pF <- features.get(f)
-                 pCF <- featureClasses.get(f, klass)} yield pCF * pC / (pF * count)
-    p getOrElse 0.1 / count // TODO: optimize this
+    val pCF = featureClasses.getOrElse((f, klass), 0.05) // TODO: optimize fudge factor
+    pCF / count
   }
 }
 
