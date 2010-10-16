@@ -15,7 +15,7 @@ class Classifier
     newserial = @@redis.get "serial"
     if newserial != @@serial
       @@serial = newserial
-      @@bc = Bayes.json_create(@@redis.get("bc"))
+      @@bc = Bayes.load_from_json(@@redis.get("bc"))
     end
     @@bc
   end
@@ -25,7 +25,11 @@ end
 get "/" do
   bc = Classifier.get
   feats = params[:f]
-  feats.inspect
-  c = bc.classify(feats).first.first
-  c
+  if feats.nil?
+    status 400
+    "error - no features specified"
+  else
+    c = bc.classify(feats).first.first
+    c
+  end
 end

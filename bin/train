@@ -9,11 +9,7 @@ require 'bayes'
 require 'json'
 
 file = DataFile.new(ARGV.first)
-
-b = Bayes.new
-file.points.each do |klass,features|
-  b.add_sample(klass, features)
-end
+b = Bayes.load_from_datafile(file)
 
 r = Redis.new
 serial = r.get "serial"

@@ -3,6 +3,6 @@ ENV['RACK_ENV'] = "production"
 
 $: << File.dirname(__FILE__)
 
-require 'app'
+require 'bayesapp'
 
 run Sinatra::Application

@@ -2,9 +2,19 @@ require 'json'
 
 class Bayes
 
-  def self.json_create(json)
+  attr_reader :count, :pc, :pf, :pcf
+
+  def self.load_from_json(json)
     json = JSON.load(json)
     Bayes.new(json)
+  end
+
+  def self.load_from_datafile(file)
+    b = Bayes.new
+    file.points.each do |klass,features|
+      b.add_sample(klass, features)
+    end
+    b
   end
 
   def initialize(attrs = {})
