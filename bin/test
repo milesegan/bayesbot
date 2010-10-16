@@ -4,18 +4,17 @@
 $: << File.join(File.dirname(__FILE__), "..", "lib")
 
 require 'datafile'
-require 'redis'
-require 'bayes'
+require 'net/http'
 
 file = DataFile.new(ARGV.first)
 
-r = Redis.new
-bcjson = r.get "bc"
-bc = Bayes.json_create(bcjson)
-correct = 0
-file.points.each do |klass, features|
-  classified = bc.classify(features).first.first
-  puts "#{klass} => #{classified}"
-  correct += 1 if classified == klass
+Net::HTTP.start("localhost", "3000") do |http|
+  correct = 0
+  file.points.each do |c,f|
+    query = "/?" + f.collect { |i| "f[]=#{i}" }.join("&")
+    resp = http.get(query).body.strip
+    correct +=1 if resp == c
+    puts "#{c} => #{resp}"
+  end
+  puts correct.to_f / file.points.size
 end
-puts correct.to_f / file.points.size

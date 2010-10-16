@@ -24,5 +24,8 @@ end
 
 get "/" do
   bc = Classifier.get
-  bc.inspect
+  feats = params[:f]
+  feats.inspect
+  c = bc.classify(feats).first.first
+  c
 end

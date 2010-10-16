@@ -13,7 +13,7 @@ class DataFile
       klass, *parts = i.strip.split(sep)
       next unless parts.size == names.size
       
-      features = names.zip(parts).collect { |i| i.join("-") }
+      features = names.zip(parts).collect { |i| i.join("__") }
       points << [klass, features]
     end
     @points

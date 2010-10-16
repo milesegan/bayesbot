@@ -16,5 +16,7 @@ file.points.each do |klass,features|
 end
 
 r = Redis.new
+serial = r.get "serial"
 r.set "bc", JSON.dump(b)
+r.set "serial", serial.to_i + 1
 
