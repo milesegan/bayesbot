@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 # bulk-loads a dataset from a text file
 
-$: << File.dirname(__FILE__)
+$: << File.join(File.dirname(__FILE__), "..", "lib")
 
 require 'redis'
 require 'datafile'

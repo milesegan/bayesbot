@@ -1,6 +1,7 @@
 #!/usr/bin/env ruby
 # test a running bayes bot with a given dataset
-$: << File.dirname(__FILE__)
+
+$: << File.join(File.dirname(__FILE__), "..", "lib")
 
 require 'datafile'
 require 'redis'
@@ -11,7 +12,10 @@ file = DataFile.new(ARGV.first)
 r = Redis.new
 bcjson = r.get "bc"
 bc = Bayes.json_create(bcjson)
+correct = 0
 file.points.each do |klass, features|
-  classified = bc.classify(features)
-  puts "#{klass} => #{classified.first.first}"
+  classified = bc.classify(features).first.first
+  puts "#{klass} => #{classified}"
+  correct += 1 if classified == klass
 end
+puts correct.to_f / file.points.size
