@@ -1,5 +1,5 @@
-require 'bayes'
 require 'bayesapp'
+require 'lib/bayes'
 require 'test/unit'
 require 'rack/test'
 

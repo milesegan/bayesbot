@@ -1,8 +1,8 @@
 require 'test/unit'
 require 'rack/test'
 require 'bayesapp'
-require 'bayes'
-require 'datafile'
+require 'lib/bayes'
+require 'lib/datafile'
 
 ENV['RACK_ENV'] = 'test'
 
