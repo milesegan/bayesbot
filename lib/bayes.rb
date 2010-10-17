@@ -11,7 +11,7 @@ class Bayes
 
   def self.load_from_datafile(file)
     b = Bayes.new
-    file.points.each do |klass,features|
+    file.each_sample do |klass,features|
       b.add_sample(klass, features)
     end
     b

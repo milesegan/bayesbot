@@ -10,7 +10,7 @@ file = DataFile.new(ARGV.first)
 
 Net::HTTP.start("localhost", "3000") do |http|
   correct = 0
-  file.points.each do |c,f|
+  file.each_sample do |c,f|
     query = "/?" + f.collect { |i| "f[]=#{i}" }.join("&")
     resp = http.get(query).body.strip
     correct +=1 if resp == c
