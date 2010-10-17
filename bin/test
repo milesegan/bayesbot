@@ -16,5 +16,5 @@ Net::HTTP.start("localhost", "3000") do |http|
     correct +=1 if resp == c
     puts "#{c} => #{resp}"
   end
-  puts correct.to_f / file.points.size
+  puts correct.to_f / file.count
 end
