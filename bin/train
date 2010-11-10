@@ -1,19 +1,28 @@
-#!/usr/bin/env ruby
+#!/usr/bin/env python
+
 # bulk-loads a dataset from a text file
 
-$: << File.join(File.dirname(__FILE__), "..", "lib")
+from collections import Counter
+import sys
+import brains
+import redis
 
-require 'rubygems'
-require 'redis'
-require 'datafile'
-require 'bayes'
-require 'json'
+def main():
+    sep = "__"
+    df = brains.DataFile(sys.argv[1])
+    r = redis.Redis()
+    del r["pc"]
+    del r["pfc"]
+    pc = Counter()
+    pfc = Counter()
+    for klass, features in df.points():
+        pc[klass] += 1
+        feats = [sep.join(i) for i in features.items()]
+        feats = [sep.join([i,klass]) for i in feats]
+        for f in feats:
+            pfc[f] += 1
+    r.hmset("pc", pc)
+    r.hmset("pfc", pfc)
 
-file = DataFile.new(ARGV.first)
-b = Bayes.load_from_datafile(file)
-
-r = Redis.new
-serial = r.get "serial"
-r.set "bc", JSON.dump(b)
-r.set "serial", serial.to_i + 1
+main()
 

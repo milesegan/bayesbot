@@ -1,20 +1,26 @@
-#!/usr/bin/env ruby
+#!/usr/bin/env python
 # test a running bayes bot with a given dataset
 
-$: << File.join(File.dirname(__FILE__), "..", "lib")
+from __future__ import division
+import brains
+import httplib
+import sys
+import urllib
 
-require 'datafile'
-require 'net/http'
+def main():
+    sep = "__"
+    df = brains.DataFile(sys.argv[1])
+    c = httplib.HTTPConnection("localhost", 5000)
+    correct = 0
+    for klass, feats in df.points():
+        feats = [("f", sep.join(i)) for i in feats.items()]
+        d = urllib.urlencode(feats)
+        c.request("GET", "/?" + d)
+        resp = c.getresponse().read()
+        if klass == resp:
+            correct += 1
+        print("{} => {}".format(klass, resp))
+    print(correct / df.count)
 
-file = DataFile.new(ARGV.first)
+main()        
 
-Net::HTTP.start("localhost", "3000") do |http|
-  correct = 0
-  file.each_sample do |c,f|
-    query = "/?" + f.collect { |i| "f[]=#{i}" }.join("&")
-    resp = http.get(query).body.strip
-    correct +=1 if resp == c
-    puts "#{c} => #{resp}"
-  end
-  puts correct.to_f / file.count
-end

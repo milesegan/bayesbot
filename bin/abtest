@@ -1,0 +1,5 @@
+#!/bin/sh
+# use ab to test throughput
+# train mushroom dataset before running me
+
+ab -c 4 -n 1000 'http://127.0.0.1:5000/?c=e&f=habitat__v__e&f=cap-shape__e__e&f=cap-color__s__e&f=stalk-color-above-ring__s__e&f=stalk-shape__y__e&f=gill-attachment__n__e&f=bruises%3F__n__e&f=ring-number__n__e&f=stalk-surface-below-ring__s__e&f=gill-size__c__e&f=stalk-color-below-ring__o__e&f=veil-color__p__e&f=odor__f__e&f=gill-spacing__a__e&f=spore-print-color__p__e&f=gill-color__b__e&f=population__b__e&f=stalk-root__e__e&f=ring-type__o__e&f=stalk-surface-above-ring__%3F__e&f=veil-type__o__e&f=cap-surface__x__e'

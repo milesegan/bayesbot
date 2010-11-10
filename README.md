@@ -1,7 +1,7 @@
 # bayesbot
 
 Bayesbot is a naive bayesian classifier exposed as a simple
-web service. It is implemented as a Sinatra web service
+web service. It is implemented as a Python/Flask web service
 using Redis as the back-end.
 
 ## web api
@@ -11,7 +11,7 @@ classification.
 
 To classify a sample, send a get request to / in a format like this:
 
-    get /?f[]=feature1&f[]=feature2&f[]=feature3
+    get /?f=feature1&f=feature2&f=feature3
 
 Bayes bot will respond with a single text line containing the class
 that maps to the given features with the highest probability.
@@ -27,11 +27,11 @@ provided in the data directory.
 
 ## running bayesbot
 
-Bayesbot is a Sinatra web service, and should run in any
-rack-compatible server. To run bayesbot, first make sure redis is
-running on the target host and install the sinatra and redis
-gems. Then start bayesbot directly with a server like thin or unicorn
-or deploy it via passenger.
+Bayesbot is a Flask web service. To run bayesbot, first make sure
+redis is running on the target host and install redis and flask via
+easy_install/pip. Then start bayesbot directly as:
+
+    python bayesb
 
 Bayesbot currently expects redis to be running on localhost on the
 standard port but support for more flexible configuations will be
