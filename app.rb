@@ -3,29 +3,22 @@ $: << File.join(File.dirname(__FILE__), "lib")
 require 'rubygems'
 require 'sinatra'
 require 'redis'
-require 'bayes'
+require 'redis_bayes'
 
 class Classifier
 
-  @@serial = nil
-  @@bc = nil
+  @bc = nil
 
   def self.get
-    @@redis ||= Redis.new
-    newserial = @@redis.get "serial"
-    if newserial != @@serial
-      @@serial = newserial
-      @@bc = Bayes.json_create(@@redis.get("bc"))
-    end
-    @@bc
+    @bc ||= RedisBayes.new
   end
 
 end
 
 get "/" do
   bc = Classifier.get
-  feats = params[:f]
-  feats.inspect
-  c = bc.classify(feats).first.first
+  feats = params[:f].collect { |i| i.split(RedisBayes::SEPARATOR) }
+  feats = Hash[feats]
+  c = bc.classify(feats)
   c
 end

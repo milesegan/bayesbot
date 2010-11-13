@@ -1,20 +1,25 @@
 #!/usr/bin/env ruby
 # test a running bayes bot with a given dataset
 
-$: << File.join(File.dirname(__FILE__), "..", "lib")
+$: << "."
 
-require 'datafile'
+require 'lib/datafile'
+require 'lib/redis_bayes'
 require 'net/http'
+require 'uri'
 
 file = DataFile.new(ARGV.first)
 
 Net::HTTP.start("localhost", "3000") do |http|
   correct = 0
-  file.points.each do |c,f|
-    query = "/?" + f.collect { |i| "f[]=#{i}" }.join("&")
+  total = 0
+  file.each do |c,f|
+    fparams = f.collect { |i| "f[]=" + URI::encode(i.join(RedisBayes::SEPARATOR)) }
+    query = "/?" + fparams.join("&")
     resp = http.get(query).body.strip
+    total += 1
     correct +=1 if resp == c
     puts "#{c} => #{resp}"
   end
-  puts correct.to_f / file.points.size
+  puts correct.to_f / total
 end

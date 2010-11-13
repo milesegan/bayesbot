@@ -1,3 +1,4 @@
+# data set from http://archive.ics.uci.edu/ml/datasets/Mushroom
 poisonous,cap-shape,cap-surface,cap-color,bruises?,odor,gill-attachment,gill-spacing,gill-size,gill-color,stalk-shape,stalk-root,stalk-surface-above-ring,stalk-surface-below-ring,stalk-color-above-ring,stalk-color-below-ring,veil-type,veil-color,ring-number,ring-type,spore-print-color,population,habitat
 p,f,y,n,f,s,f,c,n,b,t,?,s,k,p,p,p,w,o,e,w,v,p
 p,f,y,e,f,y,f,c,n,b,t,?,s,k,p,w,p,w,o,e,w,v,l
