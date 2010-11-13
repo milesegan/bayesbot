@@ -1,22 +1,26 @@
 # datafile loading library
 
 class DataFile
-  attr_reader :points
+  include Enumerable
+  attr_reader :points, :names, :size
+  
+  SEP = /\s*,\s*/
 
   def initialize(path)
-    file = open(path)
-    sep = /\s*,\s*/
-    klass, *names = file.readline.strip.split(sep)
-    @points = []
-
-    file.each_line do |i|
-      klass, *parts = i.strip.split(sep)
-      next unless parts.size == names.size
-      
-      features = names.zip(parts).collect { |i| i.join("__") }
-      points << [klass, features]
+    @file = open(path)
+    while (line = @file.gets.strip) =~ /\s*#/
+      # skip comments
     end
-    @points
+    klass, *@names = line.split(SEP)
+  end
+
+  def each
+    while (line = @file.gets)
+      klass, *parts = line.strip.split(SEP)
+      next unless parts.size == @names.size
+      features = Hash[@names.zip(parts)]
+      yield [klass, features]
+    end
   end
 
 end
