@@ -43,8 +43,15 @@ class RedisBayes
     probs = {}
     allc.keys.each do |c|
       fvs = features.collect { |f,v| [f,v,c].join(SEPARATOR) }
-      values = conn.hmget "features", *fvs
-      p = values.inject(1) { |prod,p| prod * p.to_f / total }
+      values = conn.hmget("features", *fvs).collect(&:to_f)
+      p = 1
+      values.each do |v|
+        if v
+          p *= v / total
+        else
+          p *= 0.01 / total # TODO: tune this
+        end
+      end
       probs[c] = p
     end
     probs.to_a.sort { |a,b| a.last <=> b.last }.last.first
