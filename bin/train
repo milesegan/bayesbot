@@ -1,20 +1,17 @@
 #!/usr/bin/env ruby
 # bulk-loads a dataset from a text file
 
-$: << File.join(File.dirname(__FILE__), "..", "lib")
+$: << File.join(File.dirname(__FILE__), "..")
 
-require 'redis'
-require 'datafile'
-require 'bayes'
-require 'json'
+require 'lib/datafile'
+require 'lib/redis_bayes'
 
-file = DataFile.new(ARGV.first)
+def main
+  file = DataFile.new(ARGV.first)
+  rb = RedisBayes.new
+  rb.train(file)
+end
 
-r = Redis.new
-r.flushall
-
-file.each { |klass,features|
-  r.hincrby "classes", klass, 1
-}
+main
 
 
