@@ -1,28 +1,16 @@
 #!/usr/bin/env python
-
 # bulk-loads a dataset from a text file
 
-from collections import Counter
-import sys
-import brains
-import redis
+import os, sys
+sys.path.append(os.path.join(os.path.dirname(__name__), "..", "bayesbot"))
+
+from bayesbot.datafile import DataFile
+from bayesbot.redis_bayes import RedisBayes
 
 def main():
-    sep = "__"
-    df = brains.DataFile(sys.argv[1])
-    r = redis.Redis()
-    del r["pc"]
-    del r["pfc"]
-    pc = Counter()
-    pfc = Counter()
-    for klass, features in df.points():
-        pc[klass] += 1
-        feats = [sep.join(i) for i in features.items()]
-        feats = [sep.join([i,klass]) for i in feats]
-        for f in feats:
-            pfc[f] += 1
-    r.hmset("pc", pc)
-    r.hmset("pfc", pfc)
+    df = DataFile(sys.argv[1])
+    b = RedisBayes()
+    b.train(df.points(), True)
 
 main()
 
