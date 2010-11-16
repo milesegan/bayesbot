@@ -12,8 +12,7 @@ def classify():
     global rb
     rb = rb or RedisBayes()
     features = request.args.getlist("f")
-    features = [i.split(RedisBayes.SEP) for i in features]
-    features = dict(features)
+    features = dict(i.split(RedisBayes.SEP) for i in features)
     c = rb.classify(features)
     return c
 
