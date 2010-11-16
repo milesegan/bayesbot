@@ -29,9 +29,10 @@ class DataFile(object):
             s.count += 1
             yield(klass, dict(data))
 
-    def split(s, fraction):
+    def split(s, fraction, shuffle = False):
         allp = [p for p in s.points()]
-        random.shuffle(allp)
+        if shuffle:
+            random.shuffle(allp)
         split = len(allp) / fraction
         return allp[:split], allp[split:]
         

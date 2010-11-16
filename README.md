@@ -31,7 +31,7 @@ Bayesbot is a Flask web service. To run bayesbot, first make sure
 redis is running on the target host and install redis and flask via
 easy_install/pip. Then start bayesbot directly as:
 
-    python bayesb
+    python bayesbot.py
 
 Bayesbot currently expects redis to be running on localhost on the
 standard port but support for more flexible configuations will be
@@ -40,8 +40,8 @@ implemented shortly.
 To verify that your instance of bayesbot is running correctly,
 issue the following commands from the bayesbot root directory
 
-    bin/train data/mushroom-train.csv
-    bin/test data/mushroom-test.csv
+    bin/train data/mushroom.csv
+    bin/test data/mushroom.csv
 
 You should see a series of string pairs. The left corresponds to the
 known correct class for the test sample and the right corresponds to

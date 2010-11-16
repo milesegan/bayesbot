@@ -1,26 +1,31 @@
-#!/usr/bin/env ruby
+#!/usr/bin/env python
 # test a running bayes bot with a given dataset
 
-$: << "."
+from __future__ import division
 
-require 'lib/datafile'
-require 'lib/redis_bayes'
-require 'net/http'
-require 'uri'
+import os, sys
+sys.path.append(os.path.join(os.path.dirname(__name__), "..", "bayesbot"))
 
-file = DataFile.new(ARGV.first)
+from bayesbot.datafile import DataFile
+from bayesbot.redis_bayes import RedisBayes
+import httplib
+import sys
+import urllib
 
-Net::HTTP.start("localhost", "3000") do |http|
-  correct = 0
-  total = 0
-  test, train = file.split(4, true)
-  test.each do |c,f|
-    fparams = f.collect { |i| "f[]=" + URI::encode(i.join(RedisBayes::SEPARATOR)) }
-    query = "/?" + fparams.join("&")
-    resp = http.get(query).body.strip
-    total += 1
-    correct +=1 if resp == c
-    puts "#{c} => #{resp}"
-  end
-  puts correct.to_f / total
-end
+def main():
+    df = DataFile(sys.argv[1])
+    test, train = df.split(4, shuffle = True)
+    c = httplib.HTTPConnection("localhost", 5000)
+    correct = 0
+    for klass, feats in test:
+        feats = [("f", RedisBayes.SEP.join(i)) for i in feats.items()]
+        d = urllib.urlencode(feats)
+        c.request("GET", "/?" + d)
+        resp = c.getresponse().read()
+        if klass == resp:
+            correct += 1
+        print("{} => {}".format(klass, resp))
+    print(correct / len(test))
+
+main()        
+

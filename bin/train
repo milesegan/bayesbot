@@ -1,16 +1,17 @@
-#!/usr/bin/env ruby
+#!/usr/bin/env python
 # bulk-loads a dataset from a text file
 
-$: << File.join(File.dirname(__FILE__), "..")
+import os, sys
+sys.path.append(os.path.join(os.path.dirname(__name__), "..", "bayesbot"))
 
-require 'lib/datafile'
-require 'lib/redis_bayes'
+from bayesbot.datafile import DataFile
+from bayesbot.redis_bayes import RedisBayes
 
-def main
-  file = DataFile.new(ARGV.first)
-  rb = RedisBayes.new
-  test, train = file.split(4, true)
-  rb.train(train)
-end
+def main():
+    df = DataFile(sys.argv[1])
+    test, train = df.split(4, shuffle = True)
+    b = RedisBayes()
+    b.train(train, True)
 
-main
+main()
+
