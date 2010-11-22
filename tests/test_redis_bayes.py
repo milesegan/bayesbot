@@ -15,7 +15,7 @@ class TestRedisBayes(unittest.TestCase):
 
     def test_it_classifies(s):
         d = DataFile("data/mushroom.csv")
-        test, train = d.split(4)
+        test, train = d.split(4, shuffle = True)
         b = RedisBayes()
         b.train(train, True)
         correct = 0
